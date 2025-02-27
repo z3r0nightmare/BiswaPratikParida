@@ -493,13 +493,14 @@
       particleGeometry = new THREE.BufferGeometry();
       const positions = [];
       const colors = [];
-      const numParticles = 1000;
-      const particleSpread = 1000;
+      const numParticles = 2000; // Increased for more coverage
+      const particleSpreadX = window.innerWidth * 2; // Full screen width
+      const particleSpreadY = window.innerHeight * 2; // Full screen height
 
       for (let i = 0; i < numParticles; i++) {
-        const x = Math.random() * particleSpread - particleSpread / 2;
-        const y = Math.random() * particleSpread - particleSpread / 2;
-        const z = Math.random() * particleSpread - particleSpread / 2;
+        const x = Math.random() * particleSpreadX - particleSpreadX / 2;
+        const y = Math.random() * particleSpreadY - particleSpreadY / 2;
+        const z = Math.random() * 1000 - 500; // Depth variation
         positions.push(x, y, z);
         colors.push(0, Math.random() * 0.5 + 0.5, Math.random() * 0.5);
       }
@@ -531,15 +532,24 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+
+      // Update particle spread on resize
+      const positions = particleGeometry.attributes.position.array;
+      const particleSpreadX = window.innerWidth * 2;
+      const particleSpreadY = window.innerHeight * 2;
+      for (let i = 0; i < positions.length; i += 3) {
+        positions[i] = Math.random() * particleSpreadX - particleSpreadX / 2; // X
+        positions[i + 1] = Math.random() * particleSpreadY - particleSpreadY / 2; // Y
+      }
+      particleGeometry.attributes.position.needsUpdate = true;
     }
 
     function animateBackground() {
       requestAnimationFrame(animateBackground);
-      particles.rotation.y += 0.001;
       const positions = particleGeometry.attributes.position.array;
       for (let i = 0; i < positions.length; i += 3) {
-        positions[i + 1] -= 1;
-        if (positions[i + 1] < -500) positions[i + 1] = 500;
+        positions[i + 1] -= 2; // Faster fall
+        if (positions[i + 1] < -window.innerHeight) positions[i + 1] = window.innerHeight; // Reset to top
       }
       particleGeometry.attributes.position.needsUpdate = true;
       particleMaterial.map = textures[Math.floor(Math.random() * textures.length)];
@@ -572,7 +582,7 @@
         'ImageToStl.com_robocon_drumbot v1.glb',
         (gltf) => {
           const model = gltf.scene;
-          model.scale.set(10, 10, 10); // Adjusted scale
+          model.scale.set(5, 5, 5); // Reduced size
           model.position.set(0, 0, 0);
           modelScene.add(model);
           console.log('Model loaded in viewer:', model);

@@ -325,7 +325,7 @@
   
   <div class="content">
     <header id="header">
-      <a href="#" class="logo">BISWA</a>
+      <a href="#" class="logo">Biswa Pratik Parida</a>
       <nav>
         <ul>
           <li><a href="#hero">Home</a></li>
@@ -361,7 +361,7 @@
           <div class="skill">C</div>
         </div>
         <p class="fade-in">
-          Hey, I’m Biswa! I’m a filmmaker at heart—catch my vibes on Instagram @secr0ti—blending storytelling with tech. I design 3D models in Fusion 360, edit videos with flair, and tinker with robotics and cybersecurity. I’ve got a grip on Linux, C, and Python, always hacking away at new ideas.
+          Hey, I’m Biswa Pratik Parida! I’m a filmmaker at heart—catch my vibes on Instagram @secr0ti—blending storytelling with tech. I design 3D models in Fusion 360, edit videos with flair, and tinker with robotics and cybersecurity. I’ve got a grip on Linux, C, and Python, always hacking away at new ideas.
         </p>
       </div>
     </section>
@@ -371,7 +371,7 @@
         <h2 class="fade-in">3D Models</h2>
         <div class="model-viewer fade-in" id="modelViewer"></div>
         <p class="fade-in">
-          Check out my Fusion 360 work—like this robotics model. It’s a piece of my journey into blending creativity with tech. Rotate and zoom to see the details!
+          Check out my Fusion 360 work—like this robotics model. It’s a piece of my journey into blending creativity with tech. Rotate and zoom with your mouse to see the details!
         </p>
       </div>
     </section>
@@ -466,11 +466,9 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script>
+    // Background Number Rain
     const canvasContainer = document.getElementById('canvas-container');
     let scene, camera, renderer, particles, particleGeometry, particleMaterial;
-    let mouseX = 0, mouseY = 0;
-    let windowHalfX = window.innerWidth / 2;
-    let windowHalfY = window.innerHeight / 2;
     const characters = ['0', '1', '#', '%', '&', '*', '$', '@', '!'];
     
     const textures = characters.map(char => {
@@ -487,16 +485,14 @@
       return new THREE.CanvasTexture(canvas);
     });
 
-    function init() {
+    function initBackground() {
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
       camera.position.z = 1000;
 
-      // Particle System (Number Rain)
       particleGeometry = new THREE.BufferGeometry();
       const positions = [];
       const colors = [];
-      const charIndices = [];
       const numParticles = 1000;
       const particleSpread = 1000;
 
@@ -506,12 +502,10 @@
         const z = Math.random() * particleSpread - particleSpread / 2;
         positions.push(x, y, z);
         colors.push(0, Math.random() * 0.5 + 0.5, Math.random() * 0.5);
-        charIndices.push(Math.floor(Math.random() * characters.length));
       }
 
       particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
       particleGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-      particleGeometry.setAttribute('charIndex', new THREE.Float32BufferAttribute(charIndices, 1));
 
       particleMaterial = new THREE.PointsMaterial({
         size: 20,
@@ -519,28 +513,69 @@
         opacity: 0.8,
         blending: THREE.AdditiveBlending,
         vertexColors: true,
-        map: textures[0] // Start with one texture
+        map: textures[0]
       });
 
       particles = new THREE.Points(particleGeometry, particleMaterial);
       scene.add(particles);
 
-      // Renderer
       renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
       canvasContainer.appendChild(renderer.domElement);
 
-      // Load 3D Model
+      window.addEventListener('resize', onWindowResizeBackground);
+    }
+
+    function onWindowResizeBackground() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animateBackground() {
+      requestAnimationFrame(animateBackground);
+      particles.rotation.y += 0.001;
+      const positions = particleGeometry.attributes.position.array;
+      for (let i = 0; i < positions.length; i += 3) {
+        positions[i + 1] -= 1;
+        if (positions[i + 1] < -500) positions[i + 1] = 500;
+      }
+      particleGeometry.attributes.position.needsUpdate = true;
+      particleMaterial.map = textures[Math.floor(Math.random() * textures.length)];
+      renderer.render(scene, camera);
+    }
+
+    // 3D Model Viewer
+    const modelViewer = document.getElementById('modelViewer');
+    let modelScene, modelCamera, modelRenderer, modelControls;
+
+    function initModelViewer() {
+      modelScene = new THREE.Scene();
+      modelCamera = new THREE.PerspectiveCamera(75, modelViewer.clientWidth / modelViewer.clientHeight, 0.1, 1000);
+      modelCamera.position.z = 100;
+
+      modelRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      modelRenderer.setSize(modelViewer.clientWidth, modelViewer.clientHeight);
+      modelViewer.appendChild(modelRenderer.domElement);
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      modelScene.add(ambientLight);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      directionalLight.position.set(5, 5, 5).normalize();
+      modelScene.add(directionalLight);
+
+      // Load Model
       const loader = new THREE.GLTFLoader();
       loader.load(
-        'ImageToStl.com_robocon_drumbot v1.glb', // Ensure this matches your file in the repo
+        'ImageToStl.com_robocon_drumbot v1.glb',
         (gltf) => {
           const model = gltf.scene;
-          model.scale.set(50, 50, 50); // Increased scale for visibility
-          model.position.set(0, 0, 0); // Center it
-          scene.add(model);
-          console.log('Model loaded successfully:', model);
+          model.scale.set(10, 10, 10); // Adjusted scale
+          model.position.set(0, 0, 0);
+          modelScene.add(model);
+          console.log('Model loaded in viewer:', model);
         },
         (xhr) => {
           console.log((xhr.loaded / xhr.total * 100) + '% loaded');
@@ -550,49 +585,32 @@
         }
       );
 
-      // OrbitControls
-      const controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.05;
-      controls.screenSpacePanning = true;
-      controls.minDistance = 100;
-      controls.maxDistance = 500;
-      controls.maxPolarAngle = Math.PI / 2;
+      modelControls = new THREE.OrbitControls(modelCamera, modelRenderer.domElement);
+      modelControls.enableDamping = true;
+      modelControls.dampingFactor = 0.05;
+      modelControls.minDistance = 50;
+      modelControls.maxDistance = 200;
 
-      document.addEventListener('mousemove', onDocumentMouseMove);
-      window.addEventListener('resize', onWindowResize);
+      window.addEventListener('resize', onWindowResizeModel);
     }
 
-    function onDocumentMouseMove(event) {
-      mouseX = (event.clientX - windowHalfX) * 0.05;
-      mouseY = (event.clientY - windowHalfY) * 0.05;
+    function onWindowResizeModel() {
+      modelCamera.aspect = modelViewer.clientWidth / modelViewer.clientHeight;
+      modelCamera.updateProjectionMatrix();
+      modelRenderer.setSize(modelViewer.clientWidth, modelViewer.clientHeight);
     }
 
-    function onWindowResize() {
-      windowHalfX = window.innerWidth / 2;
-      windowHalfY = window.innerHeight / 2;
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+    function animateModel() {
+      requestAnimationFrame(animateModel);
+      modelControls.update();
+      modelRenderer.render(modelScene, modelCamera);
     }
 
-    function animate() {
-      requestAnimationFrame(animate);
-
-      particles.rotation.y += 0.001;
-      const positions = particleGeometry.attributes.position.array;
-      for (let i = 0; i < positions.length; i += 3) {
-        positions[i + 1] -= 1; // Falling effect
-        if (positions[i + 1] < -500) positions[i + 1] = 500; // Reset to top
-      }
-      particleGeometry.attributes.position.needsUpdate = true;
-      particleMaterial.map = textures[Math.floor(Math.random() * textures.length)];
-
-      renderer.render(scene, camera);
-    }
-
-    init();
-    animate();
+    // Initialize and Animate
+    initBackground();
+    animateBackground();
+    initModelViewer();
+    animateModel();
 
     // Scroll Animation
     document.addEventListener('DOMContentLoaded', function() {

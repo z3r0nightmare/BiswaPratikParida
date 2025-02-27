@@ -534,6 +534,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
     // Three.js 3D Background with Number Rain
+     // Three.js 3D Background with Number Rain
     const canvasContainer = document.getElementById('canvas-container');
     
     let scene, camera, renderer;
@@ -620,6 +621,31 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       canvasContainer.appendChild(renderer.domElement);
       
+      // Load Your 3D Model
+      const loader = new THREE.GLTFLoader();
+      loader.load(
+        'ImageToStl.com_robocon_drumbot v1.glb', // Relative path to your model
+        (gltf) => {
+          const model = gltf.scene;
+          model.scale.set(1.5, 1.5, 1.5); // Adjust scale as needed
+          model.position.set(0, -2, 0); // Adjust position as needed
+          scene.add(model);
+        },
+        undefined,
+        (error) => {
+          console.error('Error loading 3D model:', error);
+        }
+      );
+      
+      // Add OrbitControls
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; // Smooth camera movement
+      controls.dampingFactor = 0.05;
+      controls.screenSpacePanning = true;
+      controls.minDistance = 100; // Minimum zoom distance
+      controls.maxDistance = 500; // Maximum zoom distance
+      controls.maxPolarAngle = Math.PI / 2; // Limit vertical rotation
+      
       // Event Listeners
       document.addEventListener('mousemove', onDocumentMouseMove);
       window.addEventListener('resize', onWindowResize);
@@ -642,9 +668,8 @@
     function animate() {
       requestAnimationFrame(animate);
       
-      camera.position.x += (mouseX - camera.position.x) * 0.01;
-      camera.position.y += (-mouseY - camera.position.y) * 0.01;
-      camera.lookAt(scene.position);
+      // Update controls
+      controls.update();
       
       // Rotate the particles
       particles.rotation.y += 0.001;
@@ -710,6 +735,7 @@
       handleScrollAnimation();
       window.addEventListener('scroll', handleScrollAnimation);
     });
+  </script>
   </script>
 </body>
 </html>

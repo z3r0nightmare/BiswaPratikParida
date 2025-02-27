@@ -168,42 +168,34 @@
       transform: translateY(-5px);
       background-color: rgba(0, 255, 170, 0.2);
     }
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-top: 3rem;
+    .carousel {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .carousel-content {
+      width: 100%;
+      text-align: center;
+    }
+    .model-viewer {
+      height: 450px;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 2rem;
     }
     .project-card {
       background-color: rgba(255, 255, 255, 0.05);
       border-radius: 10px;
-      overflow: hidden;
+      padding: 1.5rem;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       box-shadow: 0 0 10px rgba(0, 255, 170, 0.1);
+      margin: 0 auto;
+      max-width: 600px;
     }
-    .project-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-    }
-    .project-img {
-      height: 200px;
-      background-color: #333;
-      position: relative;
-      overflow: hidden;
-    }
-    .project-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.5s ease;
-    }
-    .project-card:hover .project-img img {
-      transform: scale(1.1);
-    }
-    .project-content {
-      padding: 1.5rem;
-    }
-    .project-content h3 {
+    .project-card h3 {
       margin-bottom: 0.5rem;
       font-size: 1.3rem;
     }
@@ -220,72 +212,38 @@
       margin-right: 0.5rem;
       margin-bottom: 0.5rem;
     }
-    .model-viewer {
-      height: 450px;
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 2rem;
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2rem;
+      color: #00ffaa;
+      cursor: pointer;
+      padding: 0 1rem;
+      transition: transform 0.3s ease;
     }
-    .contact-form {
-      max-width: 600px;
+    .arrow:hover {
+      transform: translateY(-50%) scale(1.2);
     }
-    .form-group {
-      margin-bottom: 1.5rem;
+    .left-arrow {
+      left: 0;
     }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 1rem;
-      background-color: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      color: #ffffff;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
-    }
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: #00ffaa;
-    }
-    textarea {
-      min-height: 150px;
-      resize: vertical;
-    }
-    footer {
-      background-color: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      padding: 2rem;
-      text-align: center;
+    .right-arrow {
+      right: 0;
     }
     .social-links {
       display: flex;
-      justify-content: center;
-      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
     .social-link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      background-color: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      margin: 0 0.5rem;
-      transition: background-color 0.3s ease, transform 0.3s ease;
+      color: #00ffaa;
+      text-decoration: none;
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
     }
     .social-link:hover {
-      background-color: #00ffaa;
       transform: translateY(-5px);
-    }
-    .social-link i {
-      color: #ffffff;
-      font-size: 1.2rem;
     }
     .fade-in {
       opacity: 0;
@@ -309,9 +267,6 @@
       h2 {
         font-size: 2rem;
       }
-      .projects-grid {
-        grid-template-columns: 1fr;
-      }
       nav ul {
         display: none;
       }
@@ -331,7 +286,9 @@
           <li><a href="#hero">Home</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#models">3D Models</a></li>
-          <li><a href="#projects">Projects</a></li>
+          <li><a href="#filmmaking">Filmmaking</a></li>
+          <li><a href="#cybersecurity">Cybersecurity</a></li>
+          <li><a href="#robotics">Robotics</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </nav>
@@ -342,7 +299,7 @@
         <div class="hero-content">
           <h1>Filmmaker & <span>Tech Tinkerer</span></h1>
           <p>Blending storytelling with 3D modeling, robotics, and cybersecurity</p>
-          <a href="#projects" class="btn">Explore My Work</a>
+          <a href="#filmmaking" class="btn">Explore My Work</a>
         </div>
       </div>
     </section>
@@ -369,25 +326,24 @@
     <section id="models">
       <div class="container">
         <h2 class="fade-in">3D Models</h2>
-        <div class="model-viewer fade-in" id="modelViewer"></div>
-        <p class="fade-in">
-          Check out my Fusion 360 work—like this robotics model. It’s a piece of my journey into blending creativity with tech. Rotate and zoom with your mouse to see the details!
-        </p>
+        <div class="carousel fade-in">
+          <span class="arrow left-arrow" onclick="prevModel()">‹</span>
+          <div class="carousel-content">
+            <div class="model-viewer" id="modelViewer"></div>
+            <p id="modelDescription">Robotics model built in Fusion 360.</p>
+          </div>
+          <span class="arrow right-arrow" onclick="nextModel()">›</span>
+        </div>
       </div>
     </section>
     
-    <section id="projects">
+    <section id="filmmaking">
       <div class="container">
-        <h2 class="fade-in">Projects</h2>
-        <p class="fade-in">
-          Here’s a peek at my creative and tech adventures—filmmaking, 3D modeling, and more.
-        </p>
-        <div class="projects-grid">
-          <div class="project-card fade-in">
-            <div class="project-img">
-              <img src="/api/placeholder/400/320" alt="Film Reel">
-            </div>
-            <div class="project-content">
+        <h2 class="fade-in">Filmmaking</h2>
+        <div class="carousel fade-in">
+          <span class="arrow left-arrow" onclick="prevFilm()">‹</span>
+          <div class="carousel-content">
+            <div class="project-card" id="filmContent">
               <h3>Film Reel (@secr0ti)</h3>
               <p>Short films and edits showcasing my storytelling—shot and polished by me. <a href="https://instagram.com/secr0ti">View on Instagram</a>.</p>
               <div class="project-tags">
@@ -396,26 +352,18 @@
               </div>
             </div>
           </div>
-          
-          <div class="project-card fade-in">
-            <div class="project-img">
-              <img src="/api/placeholder/400/320" alt="Robotics Model">
-            </div>
-            <div class="project-content">
-              <h3>Robotics Tinker</h3>
-              <p>3D modeled parts for a robotics project using Fusion 360—still in the works!</p>
-              <div class="project-tags">
-                <span class="project-tag">Fusion 360</span>
-                <span class="project-tag">Robotics</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="project-card fade-in">
-            <div class="project-img">
-              <img src="/api/placeholder/400/320" alt="Cybersecurity Script">
-            </div>
-            <div class="project-content">
+          <span class="arrow right-arrow" onclick="nextFilm()">›</span>
+        </div>
+      </div>
+    </section>
+    
+    <section id="cybersecurity">
+      <div class="container">
+        <h2 class="fade-in">Cybersecurity</h2>
+        <div class="carousel fade-in">
+          <span class="arrow left-arrow" onclick="prevCyber()">‹</span>
+          <div class="carousel-content">
+            <div class="project-card" id="cyberContent">
               <h3>Network Scanner</h3>
               <p>A Python script to sniff out network vulnerabilities—cybersecurity meets code.</p>
               <div class="project-tags">
@@ -425,6 +373,27 @@
               </div>
             </div>
           </div>
+          <span class="arrow right-arrow" onclick="nextCyber()">›</span>
+        </div>
+      </div>
+    </section>
+    
+    <section id="robotics">
+      <div class="container">
+        <h2 class="fade-in">Robotics</h2>
+        <div class="carousel fade-in">
+          <span class="arrow left-arrow" onclick="prevRobot()">‹</span>
+          <div class="carousel-content">
+            <div class="project-card" id="robotContent">
+              <h3>Robotics Tinker</h3>
+              <p>3D modeled parts for a robotics project using Fusion 360—still in the works!</p>
+              <div class="project-tags">
+                <span class="project-tag">Fusion 360</span>
+                <span class="project-tag">Robotics</span>
+              </div>
+            </div>
+          </div>
+          <span class="arrow right-arrow" onclick="nextRobot()">›</span>
         </div>
       </div>
     </section>
@@ -432,23 +401,11 @@
     <section id="contact">
       <div class="container">
         <h2 class="fade-in">Contact Me</h2>
-        <p class="fade-in">
-          Want to collab on a film, robot, or tech project? Hit me up!
-        </p>
-        <div class="contact-form fade-in">
-          <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" required>
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          <div class="form-group">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" required></textarea>
-          </div>
-          <a href="#" class="btn">Send Message</a>
+        <p class="fade-in">Want to collab on a film, robot, or tech project? Reach out!</p>
+        <div class="social-links fade-in">
+          <a href="https://github.com/z3r0nightmare" class="social-link">GitHub</a>
+          <a href="https://instagram.com/secr0ti" class="social-link">Instagram (@secr0ti)</a>
+          <a href="mailto:biswapratikparida@example.com" class="social-link">Email</a>
         </div>
       </div>
     </section>
@@ -493,14 +450,14 @@
       particleGeometry = new THREE.BufferGeometry();
       const positions = [];
       const colors = [];
-      const numParticles = 2000; // Increased for more coverage
-      const particleSpreadX = window.innerWidth * 2; // Full screen width
-      const particleSpreadY = window.innerHeight * 2; // Full screen height
+      const numParticles = 2000;
+      const particleSpreadX = window.innerWidth * 2;
+      const particleSpreadY = window.innerHeight * 2;
 
       for (let i = 0; i < numParticles; i++) {
         const x = Math.random() * particleSpreadX - particleSpreadX / 2;
         const y = Math.random() * particleSpreadY - particleSpreadY / 2;
-        const z = Math.random() * 1000 - 500; // Depth variation
+        const z = Math.random() * 1000 - 500;
         positions.push(x, y, z);
         colors.push(0, Math.random() * 0.5 + 0.5, Math.random() * 0.5);
       }
@@ -509,7 +466,7 @@
       particleGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
       particleMaterial = new THREE.PointsMaterial({
-        size: 20,
+        size: 40,
         transparent: true,
         opacity: 0.8,
         blending: THREE.AdditiveBlending,
@@ -532,14 +489,12 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-
-      // Update particle spread on resize
       const positions = particleGeometry.attributes.position.array;
       const particleSpreadX = window.innerWidth * 2;
       const particleSpreadY = window.innerHeight * 2;
       for (let i = 0; i < positions.length; i += 3) {
-        positions[i] = Math.random() * particleSpreadX - particleSpreadX / 2; // X
-        positions[i + 1] = Math.random() * particleSpreadY - particleSpreadY / 2; // Y
+        positions[i] = Math.random() * particleSpreadX - particleSpreadX / 2;
+        positions[i + 1] = Math.random() * particleSpreadY - particleSpreadY / 2;
       }
       particleGeometry.attributes.position.needsUpdate = true;
     }
@@ -548,17 +503,23 @@
       requestAnimationFrame(animateBackground);
       const positions = particleGeometry.attributes.position.array;
       for (let i = 0; i < positions.length; i += 3) {
-        positions[i + 1] -= 2; // Faster fall
-        if (positions[i + 1] < -window.innerHeight) positions[i + 1] = window.innerHeight; // Reset to top
+        positions[i + 1] -= 2;
+        if (positions[i + 1] < -window.innerHeight) positions[i + 1] = window.innerHeight;
       }
       particleGeometry.attributes.position.needsUpdate = true;
       particleMaterial.map = textures[Math.floor(Math.random() * textures.length)];
       renderer.render(scene, camera);
     }
 
-    // 3D Model Viewer
+    // 3D Model Viewer Carousel
     const modelViewer = document.getElementById('modelViewer');
     let modelScene, modelCamera, modelRenderer, modelControls;
+    const models = [
+      { file: 'ImageToStl.com_robocon_drumbot v1.glb', desc: 'Robotics model built in Fusion 360.' },
+      { file: 'ImageToStl.com_katanaforzip.glb', desc: 'Cyberpunk katana designed in Fusion 360.' },
+    ];
+    let currentModelIndex = 0;
+    let currentModel = null;
 
     function initModelViewer() {
       modelScene = new THREE.Scene();
@@ -569,31 +530,13 @@
       modelRenderer.setSize(modelViewer.clientWidth, modelViewer.clientHeight);
       modelViewer.appendChild(modelRenderer.domElement);
 
-      // Lighting
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
       modelScene.add(ambientLight);
       const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
       directionalLight.position.set(5, 5, 5).normalize();
       modelScene.add(directionalLight);
 
-      // Load Model
-      const loader = new THREE.GLTFLoader();
-      loader.load(
-        'ImageToStl.com_robocon_drumbot v1.glb',
-        (gltf) => {
-          const model = gltf.scene;
-          model.scale.set(5, 5, 5); // Reduced size
-          model.position.set(0, 0, 0);
-          modelScene.add(model);
-          console.log('Model loaded in viewer:', model);
-        },
-        (xhr) => {
-          console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-        },
-        (error) => {
-          console.error('Error loading GLTF model:', error);
-        }
-      );
+      loadModel(currentModelIndex);
 
       modelControls = new THREE.OrbitControls(modelCamera, modelRenderer.domElement);
       modelControls.enableDamping = true;
@@ -602,6 +545,24 @@
       modelControls.maxDistance = 200;
 
       window.addEventListener('resize', onWindowResizeModel);
+    }
+
+    function loadModel(index) {
+      if (currentModel) modelScene.remove(currentModel);
+      const loader = new THREE.GLTFLoader();
+      loader.load(
+        models[index].file,
+        (gltf) => {
+          currentModel = gltf.scene;
+          currentModel.scale.set(5, 5, 5);
+          currentModel.position.set(0, 0, 0);
+          modelScene.add(currentModel);
+          document.getElementById('modelDescription').textContent = models[index].desc;
+          console.log('Model loaded:', models[index].file);
+        },
+        (xhr) => console.log((xhr.loaded / xhr.total * 100) + '% loaded'),
+        (error) => console.error('Error loading model:', error)
+      );
     }
 
     function onWindowResizeModel() {
@@ -616,11 +577,105 @@
       modelRenderer.render(modelScene, modelCamera);
     }
 
-    // Initialize and Animate
+    function prevModel() {
+      currentModelIndex = (currentModelIndex - 1 + models.length) % models.length;
+      loadModel(currentModelIndex);
+    }
+
+    function nextModel() {
+      currentModelIndex = (currentModelIndex + 1) % models.length;
+      loadModel(currentModelIndex);
+    }
+
+    // Filmmaking Carousel
+    const filmContent = document.getElementById('filmContent');
+    const films = [
+      { title: 'Film Reel (@secr0ti)', desc: 'Short films and edits showcasing my storytelling—shot and polished by me. <a href="https://instagram.com/secr0ti">View on Instagram</a>.', tags: ['Filmmaking', 'Video Editing'] },
+    ];
+    let currentFilmIndex = 0;
+
+    function updateFilm() {
+      filmContent.innerHTML = `
+        <h3>${films[currentFilmIndex].title}</h3>
+        <p>${films[currentFilmIndex].desc}</p>
+        <div class="project-tags">
+          ${films[currentFilmIndex].tags.map(tag => `<span class="project-tag">${tag}</span>`).join('')}
+        </div>
+      `;
+    }
+
+    function prevFilm() {
+      currentFilmIndex = (currentFilmIndex - 1 + films.length) % films.length;
+      updateFilm();
+    }
+
+    function nextFilm() {
+      currentFilmIndex = (currentFilmIndex + 1) % films.length;
+      updateFilm();
+    }
+
+    // Cybersecurity Carousel
+    const cyberContent = document.getElementById('cyberContent');
+    const cyberProjects = [
+      { title: 'Network Scanner', desc: 'A Python script to sniff out network vulnerabilities—cybersecurity meets code.', tags: ['Cybersecurity', 'Python', 'Linux'] },
+    ];
+    let currentCyberIndex = 0;
+
+    function updateCyber() {
+      cyberContent.innerHTML = `
+        <h3>${cyberProjects[currentCyberIndex].title}</h3>
+        <p>${cyberProjects[currentCyberIndex].desc}</p>
+        <div class="project-tags">
+          ${cyberProjects[currentCyberIndex].tags.map(tag => `<span class="project-tag">${tag}</span>`).join('')}
+        </div>
+      `;
+    }
+
+    function prevCyber() {
+      currentCyberIndex = (currentCyberIndex - 1 + cyberProjects.length) % cyberProjects.length;
+      updateCyber();
+    }
+
+    function nextCyber() {
+      currentCyberIndex = (currentCyberIndex + 1) % cyberProjects.length;
+      updateCyber();
+    }
+
+    // Robotics Carousel
+    const robotContent = document.getElementById('robotContent');
+    const robotProjects = [
+      { title: 'Robotics Tinker', desc: '3D modeled parts for a robotics project using Fusion 360—still in the works!', tags: ['Fusion 360', 'Robotics'] },
+    ];
+    let currentRobotIndex = 0;
+
+    function updateRobot() {
+      robotContent.innerHTML = `
+        <h3>${robotProjects[currentRobotIndex].title}</h3>
+        <p>${robotProjects[currentRobotIndex].desc}</p>
+        <div class="project-tags">
+          ${robotProjects[currentRobotIndex].tags.map(tag => `<span class="project-tag">${tag}</span>`).join('')}
+        </div>
+      `;
+    }
+
+    function prevRobot() {
+      currentRobotIndex = (currentRobotIndex - 1 + robotProjects.length) % robotProjects.length;
+      updateRobot();
+    }
+
+    function nextRobot() {
+      currentRobotIndex = (currentRobotIndex + 1) % robotProjects.length;
+      updateRobot();
+    }
+
+    // Initialize Everything
     initBackground();
     animateBackground();
     initModelViewer();
     animateModel();
+    updateFilm();
+    updateCyber();
+    updateRobot();
 
     // Scroll Animation
     document.addEventListener('DOMContentLoaded', function() {

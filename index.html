@@ -463,92 +463,96 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script>
     // Background Number Rain
-    const canvasContainer = document.getElementById('canvas-container');
-    let scene, camera, renderer, particles, particleGeometry, particleMaterial;
-    const characters = ['0', '1', '#', '%', '&', '*', '$', '@', '!'];
-    
-    const textures = characters.map(char => {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      canvas.width = 64;
-      canvas.height = 64;
-      context.fillStyle = '#00ffaa';
-      context.font = '48px Arial';
-      context.textAlign = 'center';
-      context.textBaseline = 'middle';
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.fillText(char, canvas.width / 2, canvas.height / 2);
-      return new THREE.CanvasTexture(canvas);
-    });
+   // Background Number Rain
+const canvasContainer = document.getElementById('canvas-container');
+let scene, camera, renderer, particles, particleGeometry, particleMaterial;
+const characters = ['0', '1', '#', '%', '&', '*', '$', '@', '!'];
 
-    function initBackground() {
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
-      camera.position.z = 1000;
+const textures = characters.map(char => {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  canvas.width = 64;
+  canvas.height = 64;
+  context.fillStyle = '#00ffaa';
+  context.font = '48px Arial';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillText(char, canvas.width / 2, canvas.height / 2);
+  return new THREE.CanvasTexture(canvas);
+});
 
-      particleGeometry = new THREE.BufferGeometry();
-      const positions = [];
-      const colors = [];
-      const numParticles = 2000;
-      const particleSpreadX = window.innerWidth * 2;
-      const particleSpreadY = window.innerHeight * 2;
+function initBackground() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+  camera.position.z = 1000;
 
-      for (let i = 0; i < numParticles; i++) {
-        const x = Math.random() * particleSpreadX - particleSpreadX / 2;
-        const y = Math.random() * particleSpreadY - particleSpreadY / 2;
-        const z = Math.random() * 1000 - 500;
-        positions.push(x, y, z);
-        colors.push(0, Math.random() * 0.5 + 0.5, Math.random() * 0.5);
-      }
+  particleGeometry = new THREE.BufferGeometry();
+  const positions = [];
+  const colors = [];
+  const numParticles = 500; // Reduced density (was 2000)
+  const particleSpreadX = window.innerWidth * 2;
+  const particleSpreadY = window.innerHeight * 2;
 
-      particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-      particleGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  for (let i = 0; i < numParticles; i++) {
+    const x = Math.random() * particleSpreadX - particleSpreadX / 2;
+    const y = Math.random() * particleSpreadY - particleSpreadY / 2;
+    const z = Math.random() * 1000 - 500;
+    positions.push(x, y, z);
+    colors.push(0, 1, 0.5); // Consistent green color, no random variation
+  }
 
-      particleMaterial = new THREE.PointsMaterial({
-        size: 40,
-        transparent: true,
-        opacity: 0.8,
-        blending: THREE.AdditiveBlending,
-        vertexColors: true,
-        map: textures[0]
-      });
+  particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  particleGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-      particles = new THREE.Points(particleGeometry, particleMaterial);
-      scene.add(particles);
+  particleMaterial = new THREE.PointsMaterial({
+    size: 30, // Slightly smaller size for clarity
+    transparent: true,
+    opacity: 0.6, // Slightly more subtle
+    blending: THREE.AdditiveBlending,
+    vertexColors: true,
+    map: textures[0]
+  });
 
-      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-      renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      canvasContainer.appendChild(renderer.domElement);
+  particles = new THREE.Points(particleGeometry, particleMaterial);
+  scene.add(particles);
 
-      window.addEventListener('resize', onWindowResizeBackground);
-    }
+  renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  canvasContainer.appendChild(renderer.domElement);
 
-    function onWindowResizeBackground() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      const positions = particleGeometry.attributes.position.array;
-      const particleSpreadX = window.innerWidth * 2;
-      const particleSpreadY = window.innerHeight * 2;
-      for (let i = 0; i < positions.length; i += 3) {
-        positions[i] = Math.random() * particleSpreadX - particleSpreadX / 2;
-        positions[i + 1] = Math.random() * particleSpreadY - particleSpreadY / 2;
-      }
-      particleGeometry.attributes.position.needsUpdate = true;
-    }
+  window.addEventListener('resize', onWindowResizeBackground);
+}
 
-    function animateBackground() {
-      requestAnimationFrame(animateBackground);
-      const positions = particleGeometry.attributes.position.array;
-      for (let i = 0; i < positions.length; i += 3) {
-        positions[i + 1] -= 2;
-        if (positions[i + 1] < -window.innerHeight) positions[i + 1] = window.innerHeight;
-      }
-      particleGeometry.attributes.position.needsUpdate = true;
-      particleMaterial.map = textures[Math.floor(Math.random() * textures.length)];
-      renderer.render(scene, camera);
-    }
+function onWindowResizeBackground() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  const positions = particleGeometry.attributes.position.array;
+  const particleSpreadX = window.innerWidth * 2;
+  const particleSpreadY = window.innerHeight * 2;
+  for (let i = 0; i < positions.length; i += 3) {
+    positions[i] = Math.random() * particleSpreadX - particleSpreadX / 2;
+    positions[i + 1] = Math.random() * particleSpreadY - particleSpreadY / 2;
+  }
+  particleGeometry.attributes.position.needsUpdate = true;
+}
+
+function animateBackground() {
+  requestAnimationFrame(animateBackground);
+  const positions = particleGeometry.attributes.position.array;
+  for (let i = 0; i < positions.length; i += 3) {
+    positions[i + 1] -= 0.5; // Slower fall speed (was 2)
+    if (positions[i + 1] < -window.innerHeight) positions[i + 1] = window.innerHeight;
+  }
+  particleGeometry.attributes>.
+
+position.needsUpdate = true;
+  // Removed random texture switching to eliminate glitch effect
+  particleMaterial.map = textures[Math.floor(Math.random() * textures.length)]; // Optional: Keep this if you want variety, remove for a single symbol
+  renderer.render(scene, camera);
+}
 
     // Zero Model with Exploding Effect
     const zeroViewer = document.getElementById('zero-viewer');
